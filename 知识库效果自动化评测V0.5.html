@@ -1079,7 +1079,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .status-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: var(--r-pill); font-size: 11px; font-weight: 650; }
 .status-chip.done { color: var(--ok-ink); background: var(--ok-wash); }
 .status-chip.running { color: var(--err-ink); background: var(--err-wash); }
-.status-chip.review { color: var(--warn-ink); background: var(--warn-wash); }
 .mini-progress { display: inline-flex; align-items: center; gap: 8px; }
 .mini-progress i { width: 64px; height: 4px; background: var(--line); border-radius: var(--r-pill); overflow: hidden; }
 .mini-progress i::after { content: ""; display: block; width: var(--progress,100%); height: 100%; background: var(--brand); }
@@ -1265,9 +1264,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
       <div class="batch-panel-head">
         <div><h2>评测批次</h2><p>点击批次查看聚合结果；人工校验通过 CSV 下载与回流完成</p></div>
         <div class="batch-actions">
-          <button class="secondary-btn" type="button" id="importBatchBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9M8 13l4-4 4 4M5 3h14v4H5z"/></svg>导入人工标注
-          </button>
           <button class="primary-btn" type="button" id="createBatchBtn2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>发起评测
           </button>
@@ -1275,7 +1271,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
       </div>
       <div class="batch-table-wrap">
         <table class="batch-table">
-          <thead><tr><th>批次名称</th><th>数据范围</th><th>样本数</th><th>评测进度</th><th>最终得分</th><th>人工回流</th><th>状态</th><th>操作</th></tr></thead>
+          <thead><tr><th>批次名称</th><th>数据范围</th><th>样本数</th><th>评测进度</th><th>最终得分</th><th>人工回流条数</th><th>状态</th><th>操作</th></tr></thead>
           <tbody id="batchTbody"></tbody>
         </table>
       </div>
@@ -2615,7 +2611,7 @@ const BATCH_ROWS = [
   { id:'RUN-0715-01', name:'07 月 15 日周期抽样', range:'近 7 天线上日志', samples:1000, progress:72, score:null, manual:0, status:'running' },
   { id:'RUN-0714-03', name:'售后政策知识库回归', range:'07/08 - 07/14', samples:1180, progress:100, score:75.7, manual:120, status:'done' },
   { id:'RUN-0714-02', name:'商家后台入口问答', range:'07/01 - 07/14', samples:500, progress:100, score:78.4, manual:80, status:'done' },
-  { id:'RUN-0713-01', name:'指标口径与边界问答', range:'06/14 - 07/13', samples:1096, progress:100, score:72.8, manual:200, status:'review' },
+  { id:'RUN-0713-01', name:'指标口径与边界问答', range:'06/14 - 07/13', samples:1096, progress:100, score:72.8, manual:200, status:'done' },
   { id:'RUN-0712-02', name:'营销规则长尾问法', range:'近 30 天线上日志', samples:2000, progress:100, score:69.6, manual:0, status:'done' },
 ];
 let activeBatchId='';
@@ -2624,7 +2620,6 @@ let batchSize='1000';
 
 function batchStatus(row){
   if(row.status==='running') return '<span class="status-chip running">运行中</span>';
-  if(row.status==='review') return '<span class="status-chip review">待回流</span>';
   return '<span class="status-chip done">已完成</span>';
 }
 function renderBatchTable(){
@@ -2635,7 +2630,7 @@ function renderBatchTable(){
     <td>${fmtNum(row.samples)}</td>
     <td><span class="mini-progress"><span>${row.progress}%</span><i style="--progress:${row.progress}%"></i></span></td>
     <td>${row.score==null?'—':row.score.toFixed(1)+'%'}</td>
-    <td data-import-count="${row.id}">${row.manual?`已回流 ${fmtNum(row.manual)} 条`:'未回流'}</td>
+    <td>${fmtNum(row.manual)}</td>
     <td>${batchStatus(row)}</td>
     <td><span class="batch-op"><button class="batch-link" type="button" data-open-batch="${row.id}">查看结果</button><button class="batch-link" type="button" data-download-batch="${row.id}">下载数据</button></span></td>
   </tr>`).join('');
@@ -2695,7 +2690,6 @@ function initV05(){
   document.getElementById('backToBatchBtn').addEventListener('click',showBatchHome);
   document.getElementById('detailDownloadBtn').addEventListener('click',()=>{ exportCSV(); showV05Toast('人工校验模板已下载，可直接使用 Excel 编辑'); });
   document.getElementById('detailImportBtn').addEventListener('click',requestManualImport);
-  document.getElementById('importBatchBtn').addEventListener('click',requestManualImport);
   document.getElementById('createBatchBtn').addEventListener('click',openBatchModal);
   document.getElementById('createBatchBtn2').addEventListener('click',openBatchModal);
   document.getElementById('closeBatchModal').addEventListener('click',closeBatchModal);
