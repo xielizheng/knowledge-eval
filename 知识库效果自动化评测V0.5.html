@@ -1051,6 +1051,10 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .date-pair span { color: var(--ink-3); text-align: center; }
 .field-control { width: 100%; min-height: 38px; border: 1px solid var(--line); border-radius: var(--r); padding: 0 11px; font: inherit; color: var(--ink); background: var(--surface); }
 .field-control:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-ring); }
+.field-control.invalid { border-color: var(--err); box-shadow: 0 0 0 3px var(--err-wash); }
+.field-meta { display: flex; justify-content: space-between; gap: 12px; min-height: 18px; margin-top: 5px; font-size: 11.5px; }
+.field-error { color: var(--err-ink); }
+.field-count { margin-left: auto; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .size-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
 .size-choice { height: 38px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); color: var(--ink-2); }
 .size-choice.on { border-color: var(--brand); color: var(--brand); background: var(--brand-wash); font-weight: 650; }
@@ -1315,6 +1319,14 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
       <button class="modal-close" type="button" id="closeBatchModal" aria-label="关闭">×</button>
     </div>
     <div class="modal-body">
+      <div class="form-section">
+        <label class="form-label" for="batchTaskName">评测任务名称</label>
+        <input class="field-control" type="text" id="batchTaskName" maxlength="50" placeholder="请输入评测任务名称" autocomplete="off" required aria-describedby="batchTaskNameError batchTaskNameCount">
+        <div class="field-meta">
+          <span class="field-error" id="batchTaskNameError" role="alert"></span>
+          <span class="field-count" id="batchTaskNameCount">0 / 50</span>
+        </div>
+      </div>
       <div class="form-section">
         <span class="form-label">数据范围</span>
         <div class="choice-grid" id="sourceChoices">
@@ -2385,10 +2397,17 @@ function showBatchHome(){
 }
 function openBatchModal(){
   const modal=document.getElementById('batchModal');
+  const taskName=document.getElementById('batchTaskName');
   modal.hidden=false;
   document.body.style.overflow='hidden';
+  taskName.value='';
+  taskName.classList.remove('invalid');
+  taskName.removeAttribute('aria-invalid');
+  document.getElementById('batchTaskNameError').textContent='';
+  document.getElementById('batchTaskNameCount').textContent='0 / 50';
   document.getElementById('batchDateFrom').value=fmtDate(dayOffset(6));
   document.getElementById('batchDateTo').value=fmtDate(TODAY);
+  requestAnimationFrame(()=>taskName.focus());
 }
 function closeBatchModal(){
   document.getElementById('batchModal').hidden=true;
@@ -2424,6 +2443,15 @@ function initV05(){
   document.getElementById('closeBatchModal').addEventListener('click',closeBatchModal);
   document.getElementById('cancelBatchModal').addEventListener('click',closeBatchModal);
   document.getElementById('batchModal').addEventListener('click',e=>{ if(e.target.id==='batchModal') closeBatchModal(); });
+  document.getElementById('batchTaskName').addEventListener('input',e=>{
+    const input=e.currentTarget;
+    document.getElementById('batchTaskNameCount').textContent=`${input.value.length} / 50`;
+    if(input.value.trim()){
+      input.classList.remove('invalid');
+      input.removeAttribute('aria-invalid');
+      document.getElementById('batchTaskNameError').textContent='';
+    }
+  });
   document.querySelectorAll('#sourceChoices .choice-card').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('#sourceChoices .choice-card').forEach(item=>item.classList.remove('on'));
     btn.classList.add('on'); batchSource=btn.dataset.source;
@@ -2434,12 +2462,21 @@ function initV05(){
     btn.classList.add('on'); batchSize=btn.dataset.size;
   }));
   document.getElementById('submitBatch').addEventListener('click',()=>{
+    const taskNameInput=document.getElementById('batchTaskName');
+    const taskName=taskNameInput.value.trim();
+    if(!taskName){
+      taskNameInput.classList.add('invalid');
+      taskNameInput.setAttribute('aria-invalid','true');
+      document.getElementById('batchTaskNameError').textContent='请输入评测任务名称';
+      taskNameInput.focus();
+      return;
+    }
     const now=new Date();
     const suffix=`${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
     const from=document.getElementById('batchDateFrom').value, to=document.getElementById('batchDateTo').value;
     const range=batchSource==='cycle'?'近 7 天线上日志':`${from.replaceAll('-','/')} - ${to.replaceAll('-','/')}`;
     const samples=batchSize==='all'?3242:Number(batchSize);
-    BATCH_ROWS.unshift({ id:`RUN-0715-${suffix}`, name:batchSource==='cycle'?'线上周期抽样':'指定时间范围评测', range, samples, progress:0, score:null, manual:0, status:'running' });
+    BATCH_ROWS.unshift({ id:`RUN-0715-${suffix}`, name:taskName, range, samples, progress:0, score:null, manual:0, status:'running' });
     closeBatchModal(); renderBatchTable(); showV05Toast('评测批次已创建并开始运行');
   });
   document.getElementById('manualImportInput').addEventListener('change',e=>{ importManualCSV(e.target.files[0]); e.target.value=''; });
