@@ -466,41 +466,10 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .issue-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .issue-more.secondary { background: var(--line-2); color: var(--ink-2); }
 .issue-more.secondary:hover { color: var(--brand); background: var(--brand-wash); }
-.kb-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.kb-stat {
-  padding: 11px 12px;
-  border: 1px solid #e6edf5;
-  border-radius: 8px;
-  background: #fbfdff;
-}
-.kb-stat span {
-  display: block;
-  color: #7c8ea8;
-  font-size: 12px;
-  font-weight: 750;
-}
-.kb-stat b {
-  display: block;
-  margin-top: 3px;
-  color: var(--ink);
-  font-size: 20px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-}
-.kb-stat strong {
-  color: var(--ok-ink);
-  font-size: 12px;
-  font-weight: 800;
-}
 .issue-list { display: grid; gap: 10px; }
 .issue-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   min-height: 70px;
@@ -521,6 +490,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   font-variant-numeric: tabular-nums;
 }
 .issue-name { color: var(--ink); font-size: 14px; font-weight: 800; }
+.issue-code { margin-left: 7px; color: #7c8ea8; font-size: 11.5px; font-weight: 700; font-family: var(--num); }
 .issue-desc {
   margin-top: 3px;
   color: #8a9bb2;
@@ -571,6 +541,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 }
 .issue-chip.high { background: var(--err-wash); color: var(--err-ink); }
 .issue-chip.fixed { background: var(--ok-wash); color: var(--ok-ink); }
+.issue-chip.average { background: #eaf2fb; color: #2e5f91; }
 .attribution-pill {
   display: inline-flex;
   align-items: center;
@@ -1135,7 +1106,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 @media (max-width: 1180px) {
   .grid-2 { grid-template-columns: 1fr; }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
-  .kb-summary { grid-template-columns: repeat(2, 1fr); }
   .issue-item { grid-template-columns: auto minmax(0, 1fr) auto; }
   .issue-detail { grid-column: 2 / -1; justify-self: start; }
   .snapshot-grid { grid-template-columns: 1fr; }
@@ -1164,7 +1134,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   .issue-head { align-items: stretch; flex-direction: column; }
   .issue-head-actions { justify-content: flex-start; }
   .issue-more { align-self: flex-start; }
-  .kb-summary { grid-template-columns: 1fr; }
   .issue-item { grid-template-columns: auto minmax(0, 1fr); }
   .issue-count { grid-column: 2; }
   .snapshot-page { padding: 18px 14px 30px; }
@@ -1366,7 +1335,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
           <button class="issue-more secondary" type="button" id="kbReviewBtn">处理待修正</button>
         </div>
       </div>
-      <div class="kb-summary" id="kbAttributionSummary"></div>
       <div class="issue-list" id="kbAttributionList"></div>
     </section>
 
@@ -1687,57 +1655,59 @@ const SNAPSHOT_ROWS = buildSnapshotRows();
 /* ---------- Knowledge-base AI attribution + manual correction ---------- */
 const KB_ATTRIBUTION_TYPES = [
   {
-    key:'tool_boundary',
-    label:'知识库能力边界误判',
-    desc:'问题需要实时数据、账号状态或外部系统结果，但知识库直接给了定义型回答。',
-    owner:'边界策略',
-    suggestion:'补充实时数据、账号状态、执行类问题的拒答与转接策略。',
+    key:'query_understanding',
+    label:'问题理解',
+    rubric:['回答准确回应用户问题','部分回应，但有轻微偏移','答非所问或理解错对象/场景'],
+    owner:'问题理解',
+    suggestion:'校准用户意图、对象和场景识别。',
   },
   {
-    key:'answer_incomplete',
-    label:'答案完整性不足',
-    desc:'回答命中了知识库，但缺少入口、步骤、条件或下一步处理建议。',
-    owner:'知识库内容',
-    suggestion:'补齐 SOP 步骤、操作入口和异常分支说明。',
+    key:'evidence_relevance',
+    label:'证据相关性',
+    rubric:['召回证据和问题高度相关','部分相关','基本无关'],
+    owner:'证据召回',
+    suggestion:'优化召回匹配、切片标题和重排策略。',
   },
   {
-    key:'content_wrong',
-    label:'回答无依据扩展',
-    desc:'回答包含召回证据中未明确支持的结论、条件或具体口径。',
+    key:'evidence_sufficiency',
+    label:'证据充分性',
+    rubric:['证据足够支撑完整回答','证据只能支撑部分回答','证据不足以回答问题'],
+    owner:'证据召回',
+    suggestion:'补充可支撑完整回答的证据范围。',
+  },
+  {
+    key:'groundedness',
+    label:'回答忠实度',
+    rubric:['回答完全基于证据','回答大体基于证据，但有轻微扩展','回答包含证据没有支撑的结论'],
     owner:'答案生成',
-    suggestion:'约束回答只使用已召回证据，对证据不足部分明确说明并触发人工校验。',
+    suggestion:'约束回答只使用召回证据支持的内容。',
   },
   {
-    key:'retrieval_mismatch',
-    label:'召回片段不匹配',
-    desc:'召回文档与问题主题弱相关，导致回答引用口径偏移。',
-    owner:'召回策略',
-    suggestion:'优化文档切片标题、同义词和召回重排权重。',
+    key:'completeness',
+    label:'回答完整性',
+    rubric:['回答完整，包含条件、限制、步骤或边界','部分完整，有缺漏','明显缺少关键信息'],
+    owner:'答案生成',
+    suggestion:'补齐条件、限制、步骤和边界说明。',
   },
   {
-    key:'missing_slot',
-    label:'缺少关键槽位追问',
-    desc:'需要 SKU、类目、时间范围等上下文，但回答未先追问。',
-    owner:'对话策略',
-    suggestion:'为诊断类知识问答增加必填槽位和澄清问题。',
-  },
-  {
-    key:'rubric_unclear',
-    label:'评测标准不清',
-    desc:'答案可用性需要人工判断，当前 rubric 对边界样本覆盖不足。',
-    owner:'评测Rubric',
-    suggestion:'补充可接受答案、不可接受答案和证据引用判定标准。',
+    key:'boundary_handling',
+    label:'边界处理',
+    rubric:['证据不足或问题不明确时，正确说明边界/追问','边界说明不充分','证据不足时仍强行给确定结论'],
+    owner:'边界策略',
+    suggestion:'证据不足或问题不明确时，明确边界并发起追问。',
   },
   {
     key:'no_issue',
     label:'无明显问题',
-    desc:'AI 评测未发现知识库回答质量问题。',
+    rubric:['六个维度均达到 2 分','存在轻微问题','存在明显问题'],
     owner:'无需处理',
     suggestion:'保留当前样本作为正例回流。',
   },
 ];
+KB_ATTRIBUTION_TYPES.forEach(item=>{ item.desc=`2：${item.rubric[0]}；1：${item.rubric[1]}；0：${item.rubric[2]}`; });
 const KB_ATTRIBUTION_MAP = Object.fromEntries(KB_ATTRIBUTION_TYPES.map(item=>[item.key,item]));
-const KB_OWNER_OPTIONS = ['知识库内容','召回策略','边界策略','对话策略','评测Rubric','无需处理'];
+const KB_DIMENSIONS = KB_ATTRIBUTION_TYPES.filter(item=>item.key!=='no_issue');
+const KB_OWNER_OPTIONS = ['问题理解','证据召回','答案生成','边界策略','无需处理'];
 const KB_SEVERITY_OPTIONS = ['P0','P1','P2','P3'];
 const ATTRIBUTION_CORRECTIONS = {};
 
@@ -1889,49 +1859,42 @@ function turnKey(row, turn){ return `${row.traceId}:${turn.round}`; }
 function isKnowledgeEvalTurn(turn){
   return turn.routeType==='kb' || turn.intentType==='knowledge' || turn.knowledge!=null;
 }
-function attributionType(type){ return KB_ATTRIBUTION_MAP[type] || KB_ATTRIBUTION_MAP.rubric_unclear; }
+function attributionType(type){ return KB_ATTRIBUTION_MAP[type] || KB_ATTRIBUTION_MAP.no_issue; }
 function hasAttributionProblem(attr){ return attr && attr.type!=='no_issue'; }
+function dimensionScores(row, turn){
+  const knowledge=turn.knowledge==null?1:Math.max(0,Math.min(2,turn.knowledge));
+  const overall=turn.overall==null?1:Math.max(0,Math.min(2,turn.overall));
+  const queryUnderstanding=turn.routeAccuracy==='correct'?2:turn.intentType==='data'?2:turn.routeAccuracy==='uncertain'?1:1;
+  const evidenceRelevance=knowledge;
+  const evidenceSufficiency=knowledge===2?(turn.recall>=2?2:1):knowledge;
+  const groundedness=turn.routeAccuracy==='correct'?2:turn.routeAccuracy==='uncertain'?1:0;
+  const completeness=overall;
+  let boundaryHandling=2;
+  if(turn.intentType==='data' && turn.routeAccuracy!=='correct') boundaryHandling=0;
+  else if(turn.routeAccuracy==='uncertain') boundaryHandling=1;
+  else if(turn.routeAccuracy==='wrong' && knowledge===0) boundaryHandling=0;
+  return {
+    query_understanding:queryUnderstanding,
+    evidence_relevance:evidenceRelevance,
+    evidence_sufficiency:evidenceSufficiency,
+    groundedness,
+    completeness,
+    boundary_handling:boundaryHandling,
+  };
+}
 function inferKbAttribution(row, turn){
   if(!isKnowledgeEvalTurn(turn)) return null;
-  let type='no_issue', severity='P3', confidence=.76;
-  const evidence=[
-    `Query：${turn.query}`,
-    `知识命中：${turn.routeResult || '未命中'}，回答质量：${accuracyText(turn.routeAccuracy)}`,
-    `知识库评分：${turn.knowledge==null?'不参与':scoreToPercent(turn.knowledge)+'分'}`,
-  ];
-  if(turn.intentType==='data'){
-    type='tool_boundary';
-    severity='P1';
-    confidence=.88;
-    evidence.push('AI 判断：用户目标包含实时数据或账号状态，知识库定义型回答无法完成任务。');
-  } else if(turn.knowledge===0){
-    type='content_wrong';
-    severity='P1';
-    confidence=.86;
-    evidence.push('AI 判断：答案与当前知识库口径冲突，或引用了过期规则版本。');
-  } else if(turn.intentType==='diagnosis' && turn.routeAccuracy==='uncertain'){
-    type='missing_slot';
-    severity='P2';
-    confidence=.79;
-    evidence.push('AI 判断：诊断类问题缺少 SKU、类目或状态上下文，应先追问关键槽位。');
-  } else if(turn.knowledge===1 && turn.routeAccuracy==='correct'){
-    type='answer_incomplete';
-    severity='P2';
-    confidence=.82;
-    evidence.push('AI 判断：知识命中正确，但答案缺少入口、步骤或异常处理建议。');
-  } else if(turn.knowledge===1){
-    type='retrieval_mismatch';
-    severity='P2';
-    confidence=.74;
-    evidence.push('AI 判断：召回片段与问题主题弱相关，回答可用性下降。');
-  } else if(turn.routeAccuracy==='uncertain'){
-    type='rubric_unclear';
-    severity='P2';
-    confidence=.69;
-    evidence.push('AI 判断：当前样本处在知识解释、诊断排查或实时数据边界，需要补充评测规则。');
-  } else {
-    evidence.push('AI 判断：回答可引用、口径一致，未发现明显知识库问题。');
-  }
+  const scores=dimensionScores(row, turn);
+  const ranked=KB_DIMENSIONS.slice().sort((a,b)=>scores[a.key]-scores[b.key]);
+  let primary=ranked[0];
+  if(turn.intentType==='data' && scores.boundary_handling<2) primary=KB_ATTRIBUTION_MAP.boundary_handling;
+  const minScore=Math.min(...Object.values(scores));
+  const type=minScore===2?'no_issue':primary.key;
+  const severity=minScore===0?'P1':minScore===1?'P2':'P3';
+  const confidence=row.confidence==='high'?.86:.68;
+  const evidence=[`Query：${turn.query}`].concat(
+    KB_DIMENSIONS.map(item=>`${item.label}（${item.key}）：${scores[item.key]}分`)
+  );
   const def=attributionType(type);
   return {
     id:turnKey(row, turn),
@@ -1941,6 +1904,7 @@ function inferKbAttribution(row, turn){
     owner:def.owner,
     note:def.suggestion,
     evidence,
+    scores,
     aiType:type,
     aiSeverity:severity,
     aiOwner:def.owner,
@@ -1976,61 +1940,27 @@ function kbAttributionItems(){
 }
 function renderAttributionPanel(){
   const items=kbAttributionItems();
-  const problems=items.filter(item=>hasAttributionProblem(item.attr));
-  const corrected=items.filter(item=>item.attr.corrected).length;
-  const highRisk=problems.filter(item=>['P0','P1'].includes(item.attr.severity)).length;
-  const avgConfidence=problems.length
-    ? Math.round(problems.reduce((sum,item)=>sum+item.attr.confidence,0)/problems.length*100)
-    : 0;
-  document.getElementById('kbAttributionSummary').innerHTML=[
-    ['知识库评测轮次', fmtNum(items.length), '时间/任务'],
-    ['AI 识别问题', fmtNum(problems.length), `${avgConfidence || 0}% 平均置信`],
-    ['高风险归因', fmtNum(highRisk), 'P0 / P1'],
-    ['人工已修正', fmtNum(corrected), `${items.length?Math.round(corrected/items.length*100):0}% 覆盖`],
-  ].map(([label,value,sub])=>`<div class="kb-stat"><span>${label}</span><b>${value}</b><strong>${sub}</strong></div>`).join('');
-
-  const groups={};
-  problems.forEach(item=>{
-    const k=item.attr.type;
-    if(!groups[k]) groups[k]={ type:k, count:0, corrected:0, high:0, owner:attributionType(k).owner };
-    groups[k].count++;
-    if(item.attr.corrected) groups[k].corrected++;
-    if(['P0','P1'].includes(item.attr.severity)) groups[k].high++;
-  });
-  const ranked=Object.values(groups).sort((a,b)=>b.count-a.count).slice(0,4);
   const list=document.getElementById('kbAttributionList');
-  if(!ranked.length){
-    list.innerHTML=`<article class="issue-item">
-      <span class="issue-rank">0</span>
-      <div>
-        <div class="issue-name">暂无待归因知识库问题</div>
-        <div class="issue-desc">当前筛选下的知识库评测轮次未触发 AI 问题归因</div>
-      </div>
-      <div class="issue-count">0<span>例</span></div>
-      <button class="issue-detail" type="button" disabled>明细</button>
-    </article>`;
-    return;
-  }
-  list.innerHTML=ranked.map((group,index)=>{
-    const def=attributionType(group.type);
+  list.innerHTML=KB_DIMENSIONS.map((def,index)=>{
+    const values=items.map(item=>item.attr.scores?.[def.key] ?? 2);
+    const zero=values.filter(value=>value===0).length;
+    const one=values.filter(value=>value===1).length;
+    const issueCount=zero+one;
+    const average=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:0;
     return `<article class="issue-item">
       <span class="issue-rank">${index+1}</span>
       <div>
-        <div class="issue-name">${escapeHTML(def.label)}</div>
+        <div class="issue-name">${escapeHTML(def.label)}<span class="issue-code">${def.key}</span></div>
         <div class="issue-desc">${escapeHTML(def.desc)}</div>
         <div class="issue-meta">
-          <span class="issue-chip">${escapeHTML(group.owner)}</span>
-          <span class="issue-chip high">高风险 ${group.high}</span>
-          <span class="issue-chip fixed">已修正 ${group.corrected}</span>
+          <span class="issue-chip average">平均 ${average.toFixed(2)} / 2</span>
+          <span class="issue-chip high">0分 ${zero}</span>
+          <span class="issue-chip">1分 ${one}</span>
         </div>
       </div>
-      <div class="issue-count">${fmtNum(group.count)}<span>例</span></div>
-      <button class="issue-detail" type="button" data-attr-type="${group.type}">处理 →</button>
+      <div class="issue-count">${fmtNum(issueCount)}<span>例待改善</span></div>
     </article>`;
   }).join('');
-  list.querySelectorAll('[data-attr-type]').forEach(btn=>{
-    btn.addEventListener('click',()=>openAttributionItem(btn.dataset.attrType));
-  });
 }
 function openAttributionItem(type){
   const items=kbAttributionItems().filter(item=>hasAttributionProblem(item.attr) && item.attr.type===type);
