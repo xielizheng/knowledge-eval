@@ -1041,7 +1041,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .modal-body { padding: 20px 24px 22px; }
 .form-section + .form-section { margin-top: 20px; }
 .form-label { display: block; color: var(--ink-2); font-size: 12px; font-weight: 700; margin-bottom: 9px; }
-.choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.choice-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .choice-card { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 14px; text-align: left; min-height: 72px; }
 .choice-card strong { display: block; color: var(--ink); font-size: 13px; }
 .choice-card span { display: block; color: var(--ink-3); font-size: 11.5px; margin-top: 3px; }
@@ -1110,7 +1110,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   .running-band { grid-template-columns: 1fr; padding: 18px; }
   .progress-ring { display: none; }
   .run-foot { align-items: flex-start; flex-direction: column; gap: 3px; }
-  .choice-grid { grid-template-columns: 1fr; }
   .size-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .modal-backdrop { padding: 12px; }
   .modal-head, .modal-body { padding-left: 18px; padding-right: 18px; }
@@ -1329,11 +1328,10 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
       </div>
       <div class="form-section">
         <span class="form-label">数据范围</span>
-        <div class="choice-grid" id="sourceChoices">
-          <button class="choice-card on" type="button" data-source="cycle"><strong>线上周期抽样</strong><span>按近 7 天线上 Query 分层抽样</span></button>
-          <button class="choice-card" type="button" data-source="custom"><strong>指定时间范围</strong><span>按指定时间范围内的线上日志</span></button>
+        <div class="choice-grid">
+          <div class="choice-card on"><strong>指定时间范围</strong><span>按指定时间范围内的线上日志</span></div>
         </div>
-        <div class="date-pair" id="batchDatePair" hidden>
+        <div class="date-pair">
           <input class="field-control" type="date" id="batchDateFrom" aria-label="开始日期">
           <span>至</span>
           <input class="field-control" type="date" id="batchDateTo" aria-label="结束日期">
@@ -2357,7 +2355,6 @@ const BATCH_ROWS = [
   { id:'RUN-0712-02', name:'营销规则长尾问法', range:'近 30 天线上日志', samples:2000, progress:100, score:69.6, manual:0, status:'done' },
 ];
 let activeBatchId='';
-let batchSource='cycle';
 let batchSize='1000';
 
 function batchStatus(row){
@@ -2452,11 +2449,6 @@ function initV05(){
       document.getElementById('batchTaskNameError').textContent='';
     }
   });
-  document.querySelectorAll('#sourceChoices .choice-card').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('#sourceChoices .choice-card').forEach(item=>item.classList.remove('on'));
-    btn.classList.add('on'); batchSource=btn.dataset.source;
-    document.getElementById('batchDatePair').hidden=batchSource!=='custom';
-  }));
   document.querySelectorAll('#sizeChoices .size-choice').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('#sizeChoices .size-choice').forEach(item=>item.classList.remove('on'));
     btn.classList.add('on'); batchSize=btn.dataset.size;
@@ -2474,7 +2466,7 @@ function initV05(){
     const now=new Date();
     const suffix=`${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
     const from=document.getElementById('batchDateFrom').value, to=document.getElementById('batchDateTo').value;
-    const range=batchSource==='cycle'?'近 7 天线上日志':`${from.replaceAll('-','/')} - ${to.replaceAll('-','/')}`;
+    const range=`${from.replaceAll('-','/')} - ${to.replaceAll('-','/')}`;
     const samples=batchSize==='all'?3242:Number(batchSize);
     BATCH_ROWS.unshift({ id:`RUN-0715-${suffix}`, name:taskName, range, samples, progress:0, score:null, manual:0, status:'running' });
     closeBatchModal(); renderBatchTable(); showV05Toast('评测批次已创建并开始运行');
