@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DongEval · 知识库效果评测</title>
+<title>DongEval · 知识库效果自动化评测 V0.5</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23d9382c'/%3E%3Cpath d='M10 8h7.5c4 0 6.5 2.7 6.5 7.9S21.5 24 17.5 24H10V8zm4.2 3.6v8.8h2.9c1.8 0 2.9-1.6 2.9-4.5s-1.1-4.3-2.9-4.3h-2.9z' fill='white'/%3E%3C/svg%3E">
 <style>
 /* ============================================================
@@ -265,48 +265,6 @@ button { font-family: inherit; cursor: pointer; }
   content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ok);
 }
 
-/* ============================================================
-   Chart panels
-   ============================================================ */
-.grid-2 { display: grid; grid-template-columns: 1.62fr 1fr; gap: 14px; margin-bottom: 16px; }
-.panel {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
-}
-.panel-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px 6px; gap: 12px; }
-.panel-head h3 { font-size: 14.5px; font-weight: 700; margin: 0; }
-.panel-head .p-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
-.panel-body { padding: 8px 16px 18px; flex: 1; }
-
-.chart-toggle { display: inline-flex; background: var(--line-2); border-radius: var(--r); padding: 2px; gap: 2px; }
-.chart-toggle button { border: none; background: none; padding: 4px 10px; border-radius: var(--r-sm); font-size: 12px; font-weight: 600; color: var(--ink-2); }
-.chart-toggle button.on { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-sm); }
-
-/* legend */
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 4px 2px 10px; }
-.legend .item { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); font-weight: 500; cursor: default; }
-.legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
-.legend .item .v { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
-
-/* SVG chart base */
-.chart-svg { width: 100%; display: block; overflow: visible; }
-.chart-svg text { font-family: var(--font); fill: var(--ink-3); }
-.gridline { stroke: var(--grid); stroke-width: 1; }
-.axisline { stroke: var(--axis); stroke-width: 1; }
-.axis-tick { font-size: 11px; fill: var(--ink-3); }
-.trend-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.target-line { stroke: var(--ink-4); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
-.dot { stroke: var(--surface); stroke-width: 2; }
-.crosshair { stroke: var(--ink-4); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; transition: opacity .1s; }
-.hover-band { fill: transparent; cursor: crosshair; }
-
-/* donut */
-.donut-wrap { display: flex; align-items: center; gap: 8px; }
-.donut-center-val { font-size: 26px; font-weight: 750; fill: var(--ink); font-variant-numeric: tabular-nums; }
-.donut-center-lab { font-size: 11px; fill: var(--ink-3); font-weight: 600; }
-.donut-seg { transition: opacity .15s; cursor: pointer; }
-.donut-seg:hover { opacity: .82; }
-
 /* tooltip */
 .tip {
   position: fixed; z-index: var(--z-tooltip); pointer-events: none; opacity: 0;
@@ -337,7 +295,7 @@ button { font-family: inherit; cursor: pointer; }
 .icon-btn svg { width: 15px; height: 15px; }
 
 table { width: 100%; border-collapse: collapse; }
-#taskTable { min-width: 1160px; }
+#taskTable { min-width: 900px; }
 thead th {
   text-align: left; font-size: 12px; font-weight: 700; color: var(--ink-2);
   padding: 11px 16px; background: var(--surface-2); border-bottom: 1px solid var(--line);
@@ -466,41 +424,10 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .issue-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .issue-more.secondary { background: var(--line-2); color: var(--ink-2); }
 .issue-more.secondary:hover { color: var(--brand); background: var(--brand-wash); }
-.kb-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.kb-stat {
-  padding: 11px 12px;
-  border: 1px solid #e6edf5;
-  border-radius: 8px;
-  background: #fbfdff;
-}
-.kb-stat span {
-  display: block;
-  color: #7c8ea8;
-  font-size: 12px;
-  font-weight: 750;
-}
-.kb-stat b {
-  display: block;
-  margin-top: 3px;
-  color: var(--ink);
-  font-size: 20px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-}
-.kb-stat strong {
-  color: var(--ok-ink);
-  font-size: 12px;
-  font-weight: 800;
-}
 .issue-list { display: grid; gap: 10px; }
 .issue-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   min-height: 70px;
@@ -521,6 +448,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   font-variant-numeric: tabular-nums;
 }
 .issue-name { color: var(--ink); font-size: 14px; font-weight: 800; }
+.issue-code { margin-left: 7px; color: #7c8ea8; font-size: 11.5px; font-weight: 700; font-family: var(--num); }
 .issue-desc {
   margin-top: 3px;
   color: #8a9bb2;
@@ -571,6 +499,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 }
 .issue-chip.high { background: var(--err-wash); color: var(--err-ink); }
 .issue-chip.fixed { background: var(--ok-wash); color: var(--ok-ink); }
+.issue-chip.average { background: #eaf2fb; color: #2e5f91; }
 .attribution-pill {
   display: inline-flex;
   align-items: center;
@@ -667,9 +596,18 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .status-pill.failed { background: var(--err-wash); color: var(--err-ink); }
 .status-pill.interrupted { background: var(--warn-wash); color: var(--warn-ink); }
 .latency-cell { color: #8fa1bd; font-weight: 650; font-variant-numeric: tabular-nums; }
-.confidence-pill { min-width: 34px; padding: 3px 10px; }
+.confidence-pill { min-width: 54px; padding: 3px 10px; }
 .confidence-pill.high { background: var(--ok-wash); color: var(--ok-ink); }
 .confidence-pill.low { background: var(--warn-wash); color: var(--warn-ink); }
+.eval-score {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 34px; height: 26px; border-radius: var(--r-pill);
+  font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.eval-score.positive { color: var(--ok-ink); background: var(--ok-wash); }
+.eval-score.negative { color: var(--err-ink); background: var(--err-wash); }
+.eval-score.zero { color: var(--warn-ink); background: var(--warn-wash); }
+.eval-score.empty { color: var(--void-ink); background: var(--void-wash); }
 
 .turn-list { display: grid; gap: 8px; padding: 9px 10px 10px; background: #fbfdff; }
 .turn-card {
@@ -1026,11 +964,108 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
 .pager button:hover:not(.on):not(:disabled) { border-color: var(--line-strong); }
 .pager button:disabled { color: var(--ink-4); cursor: not-allowed; }
 
+/* ============================================================
+   V0.5 batch-first workflow
+   ============================================================ */
+.batch-page { padding: 28px 30px 56px; min-width: 0; }
+.batch-page[hidden], .detail-page[hidden] { display: none !important; }
+.batch-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.batch-head h1 { margin: 0 0 4px; font-size: 24px; line-height: 1.35; }
+.batch-head p { margin: 0; color: var(--ink-3); font-size: 13px; }
+.primary-btn, .secondary-btn, .ghost-btn {
+  min-height: 36px; border-radius: var(--r); padding: 0 14px; font-weight: 650; font-size: 13px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap;
+}
+.primary-btn { border: 1px solid var(--brand); background: var(--brand); color: #fff; box-shadow: 0 2px 6px var(--brand-ring); }
+.primary-btn:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
+.secondary-btn { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); }
+.secondary-btn:hover { border-color: var(--brand); color: var(--brand); }
+.ghost-btn { border: none; background: transparent; color: var(--ink-2); padding: 0 6px; }
+.ghost-btn:hover { color: var(--brand); background: var(--brand-wash); }
+.primary-btn svg, .secondary-btn svg, .ghost-btn svg { width: 15px; height: 15px; }
+.running-band {
+  background: #202b40; color: #fff; border-radius: var(--r-lg); padding: 22px 24px;
+  display: grid; grid-template-columns: minmax(0,1fr) 100px; gap: 28px; align-items: center;
+  box-shadow: var(--shadow-md); margin-bottom: 16px;
+}
+.run-kicker { color: #9caccc; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+.run-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+.run-meta { color: #b9c3d6; font-size: 12px; }
+.run-track { height: 6px; background: #3a465d; border-radius: var(--r-pill); margin-top: 18px; overflow: hidden; }
+.run-track span { display: block; height: 100%; width: 72%; background: #f06a61; border-radius: inherit; }
+.run-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 7px; color: #9caccc; font-size: 11px; }
+.progress-ring {
+  width: 82px; height: 82px; border-radius: 50%; display: grid; place-items: center; justify-self: end;
+  background: conic-gradient(#f06a61 0 72%, #3a465d 72% 100%); position: relative;
+}
+.progress-ring::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: #202b40; }
+.progress-ring strong { position: relative; z-index: 1; font-size: 22px; }
+.batch-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.batch-panel-head { padding: 15px 17px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+.batch-panel-head h2 { font-size: 15px; margin: 0 0 2px; }
+.batch-panel-head p { margin: 0; color: var(--ink-3); font-size: 12px; }
+.batch-actions { display: flex; gap: 8px; align-items: center; }
+.batch-table-wrap { overflow-x: auto; }
+.batch-table { width: 100%; border-collapse: collapse; table-layout: auto; }
+.batch-table th { background: var(--surface-2); color: var(--ink-3); font-size: 11px; font-weight: 650; text-align: left; padding: 10px 14px; white-space: nowrap; border-bottom: 1px solid var(--line); }
+.batch-table td { padding: 13px 14px; border-bottom: 1px solid var(--line-2); color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+.batch-table tr:last-child td { border-bottom: 0; }
+.batch-table tbody tr:hover { background: #fffafa; }
+.batch-link { border: 0; background: transparent; padding: 0; color: #2563c9; font: inherit; font-weight: 650; }
+.batch-link:hover { text-decoration: underline; }
+.status-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: var(--r-pill); font-size: 11px; font-weight: 650; }
+.status-chip.done { color: var(--ok-ink); background: var(--ok-wash); }
+.status-chip.running { color: var(--err-ink); background: var(--err-wash); }
+.mini-progress { display: inline-flex; align-items: center; gap: 8px; }
+.mini-progress i { width: 64px; height: 4px; background: var(--line); border-radius: var(--r-pill); overflow: hidden; }
+.mini-progress i::after { content: ""; display: block; width: var(--progress,100%); height: 100%; background: var(--brand); }
+.detail-page .filters { display: none; }
+.detail-page .page-head { align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.detail-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.detail-title-copy h1 { font-size: 20px; margin: 0 0 2px; }
+.detail-title-copy .sub { display: block; }
+.detail-actions { display: flex; align-items: center; gap: 8px; }
+.detail-page .issue-head-actions, .detail-page .snapshot-open, .detail-page .snapshot-link, .detail-page .issue-detail { display: none !important; }
+.detail-page .issue-item { cursor: default; pointer-events: none; }
+.detail-page .flow-row { cursor: default; }
+.detail-page .issue-panel h3 { margin-bottom: 0; }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 600; background: rgba(21,27,38,.54); display: grid; place-items: center; padding: 24px; }
+.modal-backdrop[hidden] { display: none; }
+.eval-modal { width: min(680px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; background: var(--surface); border-radius: 8px; box-shadow: 0 24px 72px rgba(0,0,0,.24); }
+.modal-head { padding: 22px 24px 18px; border-bottom: 1px solid var(--line); position: relative; }
+.modal-head h2 { margin: 0 40px 4px 0; font-size: 20px; }
+.modal-head p { margin: 0; color: var(--ink-3); font-size: 12.5px; }
+.modal-close { position: absolute; right: 18px; top: 18px; width: 32px; height: 32px; border: 0; background: var(--surface-2); border-radius: var(--r); color: var(--ink-3); font-size: 20px; }
+.modal-close:hover { color: var(--ink); background: var(--line-2); }
+.modal-body { padding: 20px 24px 22px; }
+.form-section + .form-section { margin-top: 20px; }
+.form-label { display: block; color: var(--ink-2); font-size: 12px; font-weight: 700; margin-bottom: 9px; }
+.choice-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.choice-card { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 14px; text-align: left; min-height: 72px; }
+.choice-card strong { display: block; color: var(--ink); font-size: 13px; }
+.choice-card span { display: block; color: var(--ink-3); font-size: 11.5px; margin-top: 3px; }
+.choice-card.on { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-ring); background: #fffafa; }
+.date-pair { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: center; gap: 8px; margin-top: 10px; }
+.date-pair[hidden] { display: none; }
+.date-pair span { color: var(--ink-3); text-align: center; }
+.field-control { width: 100%; min-height: 38px; border: 1px solid var(--line); border-radius: var(--r); padding: 0 11px; font: inherit; color: var(--ink); background: var(--surface); }
+.field-control:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-ring); }
+.field-control.invalid { border-color: var(--err); box-shadow: 0 0 0 3px var(--err-wash); }
+.field-meta { display: flex; justify-content: space-between; gap: 12px; min-height: 18px; margin-top: 5px; font-size: 11.5px; }
+.field-error { color: var(--err-ink); }
+.field-count { margin-left: auto; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.size-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+.size-choice { height: 38px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); color: var(--ink-2); }
+.size-choice.on { border-color: var(--brand); color: var(--brand); background: var(--brand-wash); font-weight: 650; }
+.modal-foot { padding: 14px 24px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 9px; }
+.import-note { color: var(--ink-3); font-size: 11.5px; margin-top: 8px; }
+.toast { position: fixed; z-index: 700; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(16px); background: #202b40; color: #fff; border-radius: var(--r); padding: 9px 14px; font-size: 12px; box-shadow: var(--shadow-pop); opacity: 0; pointer-events: none; transition: .2s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* ---- Responsive ---- */
 @media (max-width: 1180px) {
-  .grid-2 { grid-template-columns: 1fr; }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
-  .kb-summary { grid-template-columns: repeat(2, 1fr); }
   .issue-item { grid-template-columns: auto minmax(0, 1fr) auto; }
   .issue-detail { grid-column: 2 / -1; justify-self: start; }
   .snapshot-grid { grid-template-columns: 1fr; }
@@ -1048,6 +1083,7 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   .avatar .who { display: none; }
   .proj-select { max-width: 150px; }
   .search-box input { width: 180px; }
+  .batch-page { padding: 22px 18px 44px; }
 }
 @media (max-width: 560px) {
   .kpi-row { grid-template-columns: 1fr; }
@@ -1058,7 +1094,6 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   .issue-head { align-items: stretch; flex-direction: column; }
   .issue-head-actions { justify-content: flex-start; }
   .issue-more { align-self: flex-start; }
-  .kb-summary { grid-template-columns: 1fr; }
   .issue-item { grid-template-columns: auto minmax(0, 1fr); }
   .issue-count { grid-column: 2; }
   .snapshot-page { padding: 18px 14px 30px; }
@@ -1069,6 +1104,16 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   .attr-form-grid { grid-template-columns: 1fr; }
   .manual-options { width: 100%; }
   .manual-options button { flex: 1; min-width: 0; }
+  .batch-head, .batch-panel-head, .detail-page .page-head { align-items: stretch; flex-direction: column; }
+  .batch-actions, .detail-actions { width: 100%; }
+  .batch-actions button, .detail-actions button { flex: 1; }
+  .running-band { grid-template-columns: 1fr; padding: 18px; }
+  .progress-ring { display: none; }
+  .run-foot { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .size-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .modal-backdrop { padding: 12px; }
+  .modal-head, .modal-body { padding-left: 18px; padding-right: 18px; }
+  .modal-foot { padding: 12px 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1128,11 +1173,61 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
     </div>
   </aside>
 
+  <!-- ===================== BATCH HOME (V0.5) ===================== -->
+  <main class="batch-page" id="batchPage">
+    <div class="batch-head">
+      <div>
+        <h1>知识库效果自动化评测</h1>
+        <p>管理评测批次、导出人工校验数据并回流结果</p>
+      </div>
+      <button class="primary-btn" type="button" id="createBatchBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>发起评测
+      </button>
+    </div>
+
+    <section class="running-band" aria-label="正在运行的评测批次">
+      <div>
+        <div class="run-kicker">正在运行 · RUN-0715-01</div>
+        <div class="run-title">线上问答 · 07 月 15 日周期抽样</div>
+        <div class="run-meta">数据范围：近 7 天线上日志 · 样本规模：1,000 条 · 目标版本：v3.8.2</div>
+        <div class="run-track"><span></span></div>
+        <div class="run-foot"><span>720 / 1,000 条已完成</span><span>预计 4 分钟后完成</span></div>
+      </div>
+      <div class="progress-ring"><strong>72%</strong></div>
+    </section>
+
+    <section class="batch-panel">
+      <div class="batch-panel-head">
+        <div><h2>评测批次</h2><p>点击批次查看聚合结果；人工校验通过 CSV 下载与回流完成</p></div>
+        <div class="batch-actions">
+          <button class="primary-btn" type="button" id="createBatchBtn2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>发起评测
+          </button>
+        </div>
+      </div>
+      <div class="batch-table-wrap">
+        <table class="batch-table">
+          <thead><tr><th>批次名称</th><th>数据范围</th><th>样本数</th><th>评测进度</th><th>最终得分</th><th>人工回流条数</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody id="batchTbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
   <!-- ===================== MAIN ===================== -->
-  <main class="main">
+  <main class="main detail-page" id="detailPage" hidden>
     <div class="page-head">
-      <h1>知识库效果评测</h1>
-      <span class="sub">采销知识库问答 · 自动评测结果</span>
+      <div class="detail-title">
+        <button class="secondary-btn" type="button" id="backToBatchBtn" aria-label="返回批次列表">←</button>
+        <div class="detail-title-copy">
+          <h1 id="detailBatchTitle">知识库效果评测</h1>
+          <span class="sub" id="detailBatchMeta">批次结果概览</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="secondary-btn" type="button" id="detailImportBtn">导入人工标注</button>
+        <button class="primary-btn" type="button" id="detailDownloadBtn">下载人工校验数据</button>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -1158,48 +1253,18 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
     <!-- KPI row -->
     <section class="kpi-row" id="kpiRow"></section>
 
-    <!-- Charts -->
-    <section class="grid-2">
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h3>最终得分</h3>
-            <div class="p-sub" id="trendSub">按日聚合 · 目标线 90%</div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div id="trendChart"></div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h3>评测结果分布</h3>
-            <div class="p-sub">当前时间段全部样本</div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="donut-wrap">
-            <div id="donutChart"></div>
-          </div>
-          <div class="legend" id="donutLegend"></div>
-        </div>
-      </div>
-    </section>
-
     <!-- Knowledge-base attribution module -->
     <section class="issue-panel kb-panel" aria-label="知识库问题归因">
       <div class="issue-head">
         <div>
           <div class="issue-eyebrow">知识库自动评测</div>
-          <h3>AI 问题归因与人工修正</h3>
+          <h3>AI 问题自动归因</h3>
         </div>
         <div class="issue-head-actions">
           <button class="issue-more" type="button" id="kbFocusBtn">仅看边界问题</button>
           <button class="issue-more secondary" type="button" id="kbReviewBtn">处理待修正</button>
         </div>
       </div>
-      <div class="kb-summary" id="kbAttributionSummary"></div>
       <div class="issue-list" id="kbAttributionList"></div>
     </section>
 
@@ -1208,12 +1273,12 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
       <div class="tp-head">
         <h3>评测流水 <span class="count-pill" id="taskCount">0 条流水</span></h3>
         <div class="tp-tools">
-          <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
-            <input type="text" id="searchInp" placeholder="搜索 TraceID / Query / 用户 Pin…">
-          </div>
-          <button class="icon-btn" id="refreshBtn" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7L21 8M21 3v5h-5"/></svg></button>
-          <button class="icon-btn" title="导出 CSV" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M12 15l-4-4M12 15l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg></button>
+          <button class="secondary-btn" type="button" id="exportAllBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M8 11l4 4 4-4M4 19h16"/></svg>导出所有
+          </button>
+          <button class="secondary-btn" type="button" id="exportLowConfidenceBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.8L2.6 17.1A2 2 0 004.3 20h15.4a2 2 0 001.7-2.9L13.7 3.8a2 2 0 00-3.4 0z"/></svg>导出非置信
+          </button>
         </div>
       </div>
       <div style="overflow-x:auto">
@@ -1223,12 +1288,10 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
               <th>时间</th>
               <th>TraceID</th>
               <th>用户 Pin</th>
-              <th class="center">轮数</th>
-              <th style="min-width:220px">会话 Query（首轮）</th>
-              <th>知识命中</th>
-              <th>回答质量</th>
-              <th>知识库归因</th>
-              <th class="center">操作</th>
+              <th style="min-width:220px">Query</th>
+              <th>问题归因</th>
+              <th>是否置信</th>
+              <th class="center">得分</th>
             </tr>
           </thead>
           <tbody id="taskTbody"></tbody>
@@ -1247,6 +1310,61 @@ tr.detail-row.open .detail-wrap { max-height: 1600px; }
   </main>
 </div>
 
+<div class="modal-backdrop" id="batchModal" hidden>
+  <section class="eval-modal" role="dialog" aria-modal="true" aria-labelledby="batchModalTitle">
+    <div class="modal-head">
+      <h2 id="batchModalTitle">发起知识库评测</h2>
+      <p>选择评测数据范围和样本规模</p>
+      <button class="modal-close" type="button" id="closeBatchModal" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <label class="form-label" for="batchTaskName">评测任务名称</label>
+        <input class="field-control" type="text" id="batchTaskName" maxlength="50" placeholder="请输入评测任务名称" autocomplete="off" required aria-describedby="batchTaskNameError batchTaskNameCount">
+        <div class="field-meta">
+          <span class="field-error" id="batchTaskNameError" role="alert"></span>
+          <span class="field-count" id="batchTaskNameCount">0 / 50</span>
+        </div>
+      </div>
+      <div class="form-section">
+        <span class="form-label">数据范围</span>
+        <div class="choice-grid">
+          <div class="choice-card on"><strong>指定时间范围</strong><span>按指定时间范围内的线上日志</span></div>
+        </div>
+        <div class="date-pair">
+          <input class="field-control" type="date" id="batchDateFrom" aria-label="开始日期">
+          <span>至</span>
+          <input class="field-control" type="date" id="batchDateTo" aria-label="结束日期">
+        </div>
+      </div>
+      <div class="form-section">
+        <span class="form-label">样本规模</span>
+        <div class="size-grid" id="sizeChoices">
+          <button class="size-choice" type="button" data-size="500">500 条</button>
+          <button class="size-choice on" type="button" data-size="1000">1,000 条</button>
+          <button class="size-choice" type="button" data-size="2000">2,000 条</button>
+          <button class="size-choice" type="button" data-size="all">全量</button>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label" for="targetVersion">目标系统版本</label>
+        <select class="field-control" id="targetVersion">
+          <option>v3.8.2 · 当前候选版本</option>
+          <option>v3.8.1 · 线上稳定版本</option>
+          <option>v3.8.0 · 历史基线版本</option>
+        </select>
+        <div class="import-note">评测器 judge-2.4 · 预计耗时约 4 分钟</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="secondary-btn" type="button" id="cancelBatchModal">取消</button>
+      <button class="primary-btn" type="button" id="submitBatch">创建并开始评测</button>
+    </div>
+  </section>
+</div>
+
+<input type="file" id="manualImportInput" accept=".csv,text/csv" hidden>
+<div class="toast" id="v05Toast" role="status" aria-live="polite"></div>
 <section class="snapshot-page" id="snapshotDetail" hidden></section>
 <div class="tip" id="tip"></div>
 
@@ -1474,57 +1592,59 @@ const SNAPSHOT_ROWS = buildSnapshotRows();
 /* ---------- Knowledge-base AI attribution + manual correction ---------- */
 const KB_ATTRIBUTION_TYPES = [
   {
-    key:'tool_boundary',
-    label:'知识库能力边界误判',
-    desc:'问题需要实时数据、账号状态或外部系统结果，但知识库直接给了定义型回答。',
+    key:'query_understanding',
+    label:'问题理解',
+    rubric:['回答准确回应用户问题','部分回应，但有轻微偏移','答非所问或理解错对象/场景'],
+    owner:'问题理解',
+    suggestion:'校准用户意图、对象和场景识别。',
+  },
+  {
+    key:'evidence_relevance',
+    label:'证据相关性',
+    rubric:['召回证据和问题高度相关','部分相关','基本无关'],
+    owner:'证据召回',
+    suggestion:'优化召回匹配、切片标题和重排策略。',
+  },
+  {
+    key:'evidence_sufficiency',
+    label:'证据充分性',
+    rubric:['证据足够支撑完整回答','证据只能支撑部分回答','证据不足以回答问题'],
+    owner:'证据召回',
+    suggestion:'补充可支撑完整回答的证据范围。',
+  },
+  {
+    key:'groundedness',
+    label:'回答忠实度',
+    rubric:['回答完全基于证据','回答大体基于证据，但有轻微扩展','回答包含证据没有支撑的结论'],
+    owner:'答案生成',
+    suggestion:'约束回答只使用召回证据支持的内容。',
+  },
+  {
+    key:'completeness',
+    label:'回答完整性',
+    rubric:['回答完整，包含条件、限制、步骤或边界','部分完整，有缺漏','明显缺少关键信息'],
+    owner:'答案生成',
+    suggestion:'补齐条件、限制、步骤和边界说明。',
+  },
+  {
+    key:'boundary_handling',
+    label:'边界处理',
+    rubric:['证据不足或问题不明确时，正确说明边界/追问','边界说明不充分','证据不足时仍强行给确定结论'],
     owner:'边界策略',
-    suggestion:'补充实时数据、账号状态、执行类问题的拒答与转接策略。',
-  },
-  {
-    key:'answer_incomplete',
-    label:'答案完整性不足',
-    desc:'回答命中了知识库，但缺少入口、步骤、条件或下一步处理建议。',
-    owner:'知识库内容',
-    suggestion:'补齐 SOP 步骤、操作入口和异常分支说明。',
-  },
-  {
-    key:'content_wrong',
-    label:'知识口径错误/过期',
-    desc:'答案引用的政策、规则或口径与当前知识库标准不一致。',
-    owner:'知识库内容',
-    suggestion:'校准文档版本、生效时间和关键限制条件，回收过期答案模板。',
-  },
-  {
-    key:'retrieval_mismatch',
-    label:'召回片段不匹配',
-    desc:'召回文档与问题主题弱相关，导致回答引用口径偏移。',
-    owner:'召回策略',
-    suggestion:'优化文档切片标题、同义词和召回重排权重。',
-  },
-  {
-    key:'missing_slot',
-    label:'缺少关键槽位追问',
-    desc:'需要 SKU、类目、时间范围等上下文，但回答未先追问。',
-    owner:'对话策略',
-    suggestion:'为诊断类知识问答增加必填槽位和澄清问题。',
-  },
-  {
-    key:'rubric_unclear',
-    label:'评测标准不清',
-    desc:'答案可用性需要人工判断，当前 rubric 对边界样本覆盖不足。',
-    owner:'评测Rubric',
-    suggestion:'补充可接受答案、不可接受答案和证据引用判定标准。',
+    suggestion:'证据不足或问题不明确时，明确边界并发起追问。',
   },
   {
     key:'no_issue',
     label:'无明显问题',
-    desc:'AI 评测未发现知识库回答质量问题。',
+    rubric:['六个维度均达到 2 分','存在轻微问题','存在明显问题'],
     owner:'无需处理',
     suggestion:'保留当前样本作为正例回流。',
   },
 ];
+KB_ATTRIBUTION_TYPES.forEach(item=>{ item.desc=`2：${item.rubric[0]}；1：${item.rubric[1]}；0：${item.rubric[2]}`; });
 const KB_ATTRIBUTION_MAP = Object.fromEntries(KB_ATTRIBUTION_TYPES.map(item=>[item.key,item]));
-const KB_OWNER_OPTIONS = ['知识库内容','召回策略','边界策略','对话策略','评测Rubric','无需处理'];
+const KB_DIMENSIONS = KB_ATTRIBUTION_TYPES.filter(item=>item.key!=='no_issue');
+const KB_OWNER_OPTIONS = ['问题理解','证据召回','答案生成','边界策略','无需处理'];
 const KB_SEVERITY_OPTIONS = ['P0','P1','P2','P3'];
 const ATTRIBUTION_CORRECTIONS = {};
 
@@ -1563,12 +1683,28 @@ function prevAgg(){
   const runs = ALL_RUNS.filter(r=>r.ts>=pStart && r.ts<pEnd && (state.task==='all'||r.taskId===state.task));
   return agg(runs);
 }
+function fitSummaryToActiveBatch(summary){
+  const row=typeof BATCH_ROWS==='undefined'?null:BATCH_ROWS.find(item=>item.id===activeBatchId);
+  if(!row || !summary.total) return summary;
+  const target=row.status==='running'?Math.max(1,Math.round(row.samples*row.progress/100)):row.samples;
+  const ratio=target/summary.total;
+  const fitted={
+    total:target,
+    ok:Math.round(summary.ok*ratio),
+    err:Math.round(summary.err*ratio),
+    warn:Math.round(summary.warn*ratio),
+    void:Math.round(summary.void*ratio),
+  };
+  fitted.ok+=target-(fitted.ok+fitted.err+fitted.warn+fitted.void);
+  fitted.acc=fitted.ok/Math.max(1,fitted.ok+fitted.err+fitted.warn);
+  return fitted;
+}
 
 /* ============================================================
    RENDER: KPI
    ============================================================ */
 function renderKPI(){
-  const cur = agg(filteredRuns()), prev = prevAgg();
+  const cur = fitSummaryToActiveBatch(agg(filteredRuns())), prev = fitSummaryToActiveBatch(prevAgg());
   const totDelta = prev.total? ((cur.total-prev.total)/prev.total*100) : 0;
   const scoreNow = scoreSummary(cur);
   const scorePrev = scoreSummary(prev);
@@ -1642,53 +1778,60 @@ function confidencePill(level){
   const text=level==='high'?'高':'低';
   return `<span class="confidence-pill ${level}">${text}</span>`;
 }
+function evaluationConfidencePill(level){
+  const text=level==='high'?'置信':'非置信 · 需人工复核';
+  return `<span class="confidence-pill ${level}">${text}</span>`;
+}
+function evaluationScore(row){
+  if(row.confidence!=='high') return null;
+  return row.first.routeAccuracy==='correct'?1:row.first.routeAccuracy==='wrong'?-1:0;
+}
+function evaluationScorePill(row){
+  const score=evaluationScore(row);
+  if(score==null) return '<span class="eval-score empty" title="非置信样本不输出评分">—</span>';
+  const cls=score===1?'positive':score===-1?'negative':'zero';
+  return `<span class="eval-score ${cls}">${score}</span>`;
+}
 function turnKey(row, turn){ return `${row.traceId}:${turn.round}`; }
 function isKnowledgeEvalTurn(turn){
   return turn.routeType==='kb' || turn.intentType==='knowledge' || turn.knowledge!=null;
 }
-function attributionType(type){ return KB_ATTRIBUTION_MAP[type] || KB_ATTRIBUTION_MAP.rubric_unclear; }
+function attributionType(type){ return KB_ATTRIBUTION_MAP[type] || KB_ATTRIBUTION_MAP.no_issue; }
 function hasAttributionProblem(attr){ return attr && attr.type!=='no_issue'; }
+function dimensionScores(row, turn){
+  const knowledge=turn.knowledge==null?1:Math.max(0,Math.min(2,turn.knowledge));
+  const overall=turn.overall==null?1:Math.max(0,Math.min(2,turn.overall));
+  const queryUnderstanding=turn.routeAccuracy==='correct'?2:turn.intentType==='data'?2:turn.routeAccuracy==='uncertain'?1:1;
+  const evidenceRelevance=knowledge;
+  const evidenceSufficiency=knowledge===2?(turn.recall>=2?2:1):knowledge;
+  const groundedness=turn.routeAccuracy==='correct'?2:turn.routeAccuracy==='uncertain'?1:0;
+  const completeness=overall;
+  let boundaryHandling=2;
+  if(turn.intentType==='data' && turn.routeAccuracy!=='correct') boundaryHandling=0;
+  else if(turn.routeAccuracy==='uncertain') boundaryHandling=1;
+  else if(turn.routeAccuracy==='wrong' && knowledge===0) boundaryHandling=0;
+  return {
+    query_understanding:queryUnderstanding,
+    evidence_relevance:evidenceRelevance,
+    evidence_sufficiency:evidenceSufficiency,
+    groundedness,
+    completeness,
+    boundary_handling:boundaryHandling,
+  };
+}
 function inferKbAttribution(row, turn){
   if(!isKnowledgeEvalTurn(turn)) return null;
-  let type='no_issue', severity='P3', confidence=.76;
-  const evidence=[
-    `Query：${turn.query}`,
-    `知识命中：${turn.routeResult || '未命中'}，回答质量：${accuracyText(turn.routeAccuracy)}`,
-    `知识库评分：${turn.knowledge==null?'不参与':scoreToPercent(turn.knowledge)+'分'}`,
-  ];
-  if(turn.intentType==='data'){
-    type='tool_boundary';
-    severity='P1';
-    confidence=.88;
-    evidence.push('AI 判断：用户目标包含实时数据或账号状态，知识库定义型回答无法完成任务。');
-  } else if(turn.knowledge===0){
-    type='content_wrong';
-    severity='P1';
-    confidence=.86;
-    evidence.push('AI 判断：答案与当前知识库口径冲突，或引用了过期规则版本。');
-  } else if(turn.intentType==='diagnosis' && turn.routeAccuracy==='uncertain'){
-    type='missing_slot';
-    severity='P2';
-    confidence=.79;
-    evidence.push('AI 判断：诊断类问题缺少 SKU、类目或状态上下文，应先追问关键槽位。');
-  } else if(turn.knowledge===1 && turn.routeAccuracy==='correct'){
-    type='answer_incomplete';
-    severity='P2';
-    confidence=.82;
-    evidence.push('AI 判断：知识命中正确，但答案缺少入口、步骤或异常处理建议。');
-  } else if(turn.knowledge===1){
-    type='retrieval_mismatch';
-    severity='P2';
-    confidence=.74;
-    evidence.push('AI 判断：召回片段与问题主题弱相关，回答可用性下降。');
-  } else if(turn.routeAccuracy==='uncertain'){
-    type='rubric_unclear';
-    severity='P2';
-    confidence=.69;
-    evidence.push('AI 判断：当前样本处在知识解释、诊断排查或实时数据边界，需要补充评测规则。');
-  } else {
-    evidence.push('AI 判断：回答可引用、口径一致，未发现明显知识库问题。');
-  }
+  const scores=dimensionScores(row, turn);
+  const ranked=KB_DIMENSIONS.slice().sort((a,b)=>scores[a.key]-scores[b.key]);
+  let primary=ranked[0];
+  if(turn.intentType==='data' && scores.boundary_handling<2) primary=KB_ATTRIBUTION_MAP.boundary_handling;
+  const minScore=Math.min(...Object.values(scores));
+  const type=minScore===2?'no_issue':primary.key;
+  const severity=minScore===0?'P1':minScore===1?'P2':'P3';
+  const confidence=row.confidence==='high'?.86:.68;
+  const evidence=[`Query：${turn.query}`].concat(
+    KB_DIMENSIONS.map(item=>`${item.label}（${item.key}）：${scores[item.key]}分`)
+  );
   const def=attributionType(type);
   return {
     id:turnKey(row, turn),
@@ -1698,6 +1841,7 @@ function inferKbAttribution(row, turn){
     owner:def.owner,
     note:def.suggestion,
     evidence,
+    scores,
     aiType:type,
     aiSeverity:severity,
     aiOwner:def.owner,
@@ -1716,9 +1860,7 @@ function attributionPill(row, turn){
   if(!attr) return '<span class="attribution-pill empty">不涉及</span>';
   const def=attributionType(attr.type);
   const cls=attr.corrected?'corrected':attr.severity.toLowerCase();
-  const prefix=attr.corrected?'人工':'AI';
-  const conf=Math.round(attr.confidence*100);
-  return `<span class="attribution-pill ${cls}" title="${escapeHTML(def.desc)}"><b>${prefix}</b><span>${escapeHTML(def.label)}</span><em>${attr.severity} · ${conf}%</em></span>`;
+  return `<span class="attribution-pill ${cls}" title="${escapeHTML(def.desc)}"><span>${escapeHTML(def.label)}</span></span>`;
 }
 function kbAttributionItems(){
   const w=activeWindow();
@@ -1735,61 +1877,27 @@ function kbAttributionItems(){
 }
 function renderAttributionPanel(){
   const items=kbAttributionItems();
-  const problems=items.filter(item=>hasAttributionProblem(item.attr));
-  const corrected=items.filter(item=>item.attr.corrected).length;
-  const highRisk=problems.filter(item=>['P0','P1'].includes(item.attr.severity)).length;
-  const avgConfidence=problems.length
-    ? Math.round(problems.reduce((sum,item)=>sum+item.attr.confidence,0)/problems.length*100)
-    : 0;
-  document.getElementById('kbAttributionSummary').innerHTML=[
-    ['知识库评测轮次', fmtNum(items.length), '时间/任务'],
-    ['AI 识别问题', fmtNum(problems.length), `${avgConfidence || 0}% 平均置信`],
-    ['高风险归因', fmtNum(highRisk), 'P0 / P1'],
-    ['人工已修正', fmtNum(corrected), `${items.length?Math.round(corrected/items.length*100):0}% 覆盖`],
-  ].map(([label,value,sub])=>`<div class="kb-stat"><span>${label}</span><b>${value}</b><strong>${sub}</strong></div>`).join('');
-
-  const groups={};
-  problems.forEach(item=>{
-    const k=item.attr.type;
-    if(!groups[k]) groups[k]={ type:k, count:0, corrected:0, high:0, owner:attributionType(k).owner };
-    groups[k].count++;
-    if(item.attr.corrected) groups[k].corrected++;
-    if(['P0','P1'].includes(item.attr.severity)) groups[k].high++;
-  });
-  const ranked=Object.values(groups).sort((a,b)=>b.count-a.count).slice(0,4);
   const list=document.getElementById('kbAttributionList');
-  if(!ranked.length){
-    list.innerHTML=`<article class="issue-item">
-      <span class="issue-rank">0</span>
-      <div>
-        <div class="issue-name">暂无待归因知识库问题</div>
-        <div class="issue-desc">当前筛选下的知识库评测轮次未触发 AI 问题归因</div>
-      </div>
-      <div class="issue-count">0<span>例</span></div>
-      <button class="issue-detail" type="button" disabled>明细</button>
-    </article>`;
-    return;
-  }
-  list.innerHTML=ranked.map((group,index)=>{
-    const def=attributionType(group.type);
+  list.innerHTML=KB_DIMENSIONS.map((def,index)=>{
+    const values=items.map(item=>item.attr.scores?.[def.key] ?? 2);
+    const zero=values.filter(value=>value===0).length;
+    const one=values.filter(value=>value===1).length;
+    const issueCount=zero+one;
+    const average=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:0;
     return `<article class="issue-item">
       <span class="issue-rank">${index+1}</span>
       <div>
-        <div class="issue-name">${escapeHTML(def.label)}</div>
+        <div class="issue-name">${escapeHTML(def.label)}<span class="issue-code">${def.key}</span></div>
         <div class="issue-desc">${escapeHTML(def.desc)}</div>
         <div class="issue-meta">
-          <span class="issue-chip">${escapeHTML(group.owner)}</span>
-          <span class="issue-chip high">高风险 ${group.high}</span>
-          <span class="issue-chip fixed">已修正 ${group.corrected}</span>
+          <span class="issue-chip average">平均 ${average.toFixed(2)} / 2</span>
+          <span class="issue-chip high">0分 ${zero}</span>
+          <span class="issue-chip">1分 ${one}</span>
         </div>
       </div>
-      <div class="issue-count">${fmtNum(group.count)}<span>例</span></div>
-      <button class="issue-detail" type="button" data-attr-type="${group.type}">处理 →</button>
+      <div class="issue-count">${fmtNum(issueCount)}<span>例待改善</span></div>
     </article>`;
   }).join('');
-  list.querySelectorAll('[data-attr-type]').forEach(btn=>{
-    btn.addEventListener('click',()=>openAttributionItem(btn.dataset.attrType));
-  });
 }
 function openAttributionItem(type){
   const items=kbAttributionItems().filter(item=>hasAttributionProblem(item.attr) && item.attr.type===type);
@@ -1809,99 +1917,6 @@ function iconCheck(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="curre
 function iconX(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>'; }
 function iconWarn(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>'; }
 
-/* ============================================================
-   RENDER: Trend chart (line: accuracy  |  stacked: labels)
-   ============================================================ */
-function dailySeries(){
-  const w = activeWindow();
-  const days = state.range==='custom'? Math.round((w.end-w.start)/86400000) : Number(state.range);
-  const map = {};
-  filteredRuns().forEach(r=>{
-    const k = fmtDate(r.date);
-    if(!map[k]) map[k]={ ok:0,err:0,warn:0,void:0,total:0,ts:r.ts };
-    map[k].ok+=r.ok; map[k].err+=r.err; map[k].warn+=r.warn; map[k].void+=r.void; map[k].total+=r.total;
-  });
-  const arr = [];
-  for(let i=days-1;i>=0;i--){
-    const d = dayOffset(i); const k=fmtDate(d);
-    const e = map[k];
-    arr.push({ date:d, key:k, ok:e?e.ok:0, err:e?e.err:0, warn:e?e.warn:0, void:e?e.void:0, total:e?e.total:0,
-               score: e? scoreSummary(e).final/100 : null });
-  }
-  return arr;
-}
-
-function renderTrend(){
-  const data = dailySeries();
-  const W=680, H=248, P={t:16,r:16,b:28,l:40};
-  const iw=W-P.l-P.r, ih=H-P.t-P.b;
-  const n=data.length;
-  const xAt = i => P.l + (n<=1? iw/2 : iw*i/(n-1));
-
-  document.getElementById('trendSub').textContent = '按日聚合 · 虚线为 90% 目标';
-
-  let svg = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="最终得分趋势">`;
-  const ys=0.5, ye=1.0;
-  const yAt = v => P.t + ih*(1-(v-ys)/(ye-ys));
-  for(let v=0.5; v<=1.0001; v+=0.1){
-    const y=yAt(v);
-    svg+=`<line class="gridline" x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}"/>`;
-    svg+=`<text class="axis-tick" x="${P.l-8}" y="${y+3}" text-anchor="end">${Math.round(v*100)}%</text>`;
-  }
-  svg+=`<line class="target-line" x1="${P.l}" y1="${yAt(0.9)}" x2="${W-P.r}" y2="${yAt(0.9)}"/>`;
-  svg+=`<text x="${W-P.r}" y="${yAt(0.9)-5}" text-anchor="end" font-size="10.5" fill="${C.ink3}">目标 90%</text>`;
-  const pts = data.map((d,i)=> d.score==null?null:{x:xAt(i),y:yAt(d.score),i}).filter(Boolean);
-  if(pts.length){
-    let area=`M${pts[0].x},${yAt(ys)}`;
-    pts.forEach(p=>area+=`L${p.x},${p.y}`);
-    area+=`L${pts[pts.length-1].x},${yAt(ys)}Z`;
-    svg+=`<defs><linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.ok}" stop-opacity="0.16"/><stop offset="1" stop-color="${C.ok}" stop-opacity="0"/></linearGradient></defs>`;
-    svg+=`<path d="${area}" fill="url(#scoreFill)"/>`;
-    let line='M'+pts.map(p=>`${p.x},${p.y}`).join('L');
-    svg+=`<path class="trend-line" d="${line}" stroke="${C.ok}"/>`;
-    if(pts.length<=20) pts.forEach(p=>svg+=`<circle class="dot" cx="${p.x}" cy="${p.y}" r="3.2" fill="${C.ok}"/>`);
-  }
-  svg+=xLabels(data,xAt,H,P,n);
-  svg+=hoverLayer(data,xAt,P,ih);
-  svg+=`<line class="crosshair" id="xhair" x1="0" y1="${P.t}" x2="0" y2="${P.t+ih}"/>`;
-  svg+=`</svg>`;
-  document.getElementById('trendChart').innerHTML = svg;
-  wireTrendHover(data,xAt);
-}
-function xLabels(data,xAt,H,P,n){
-  let out=''; const step=Math.max(1,Math.ceil(n/6));
-  data.forEach((d,i)=>{ if(i%step!==0 && i!==n-1) return;
-    const mm=`${d.date.getMonth()+1}/${d.date.getDate()}`;
-    out+=`<text class="axis-tick" x="${xAt(i)}" y="${H-8}" text-anchor="middle">${mm}</text>`;
-  });
-  return out;
-}
-function hoverLayer(data,xAt,P,ih){
-  const n=data.length; let out='';
-  data.forEach((d,i)=>{
-    const x0 = i===0?P.l: (xAt(i-1)+xAt(i))/2;
-    const x1 = i===n-1? xAt(i)+40 : (xAt(i)+xAt(i+1))/2;
-    out+=`<rect class="hover-band" x="${x0}" y="${P.t}" width="${Math.max(1,x1-x0)}" height="${ih}" data-i="${i}"/>`;
-  });
-  return out;
-}
-function wireTrendHover(data,xAt){
-  const svg=document.querySelector('#trendChart svg');
-  const xhair=svg.querySelector('#xhair');
-  const tip=document.getElementById('tip');
-  svg.querySelectorAll('.hover-band').forEach(band=>{
-    band.addEventListener('mousemove', e=>{
-      const i=+band.dataset.i, d=data[i];
-      xhair.style.opacity=1; xhair.setAttribute('x1',xAt(i)); xhair.setAttribute('x2',xAt(i));
-      const rows = d.score==null? `<div class="t-row"><span class="l">无运行</span></div>`
-        : `<div class="t-row"><span class="l"><span class="sw" style="background:${C.ok}"></span>最终得分</span><span class="n">${(d.score*100).toFixed(1)}%</span></div>
-           <div class="t-row"><span class="l">样本</span><span class="n">${fmtNum(d.total)}</span></div>`;
-      tip.innerHTML=`<div class="t-title">${d.key}</div>${rows}`;
-      tip.style.opacity=1; positionTip(e);
-    });
-    band.addEventListener('mouseleave', ()=>{ xhair.style.opacity=0; tip.style.opacity=0; });
-  });
-}
 function positionTip(e){
   const tip=document.getElementById('tip');
   const w=tip.offsetWidth, h=tip.offsetHeight;
@@ -1917,52 +1932,6 @@ function showTip(e, message){
   positionTip(e);
   window.clearTimeout(showTip.tmr);
   showTip.tmr=window.setTimeout(()=>{ tip.style.opacity=0; },1800);
-}
-
-/* ============================================================
-   RENDER: Donut
-   ============================================================ */
-function renderDonut(){
-  const s=agg(filteredRuns());
-  const parts=LABELS.map(l=>({...l, val:s[l.key]}));
-  const total=parts.reduce((a,p)=>a+p.val,0)||1;
-  const R=78, r=50, cx=95, cy=95, cir=2*Math.PI*((R+r)/2), sw=R-r;
-  let off=0, segs='';
-  const gap=total>0?0.006:0;
-  parts.forEach(p=>{
-    if(!p.val) return;
-    const frac=p.val/total;
-    const len=cir*(frac-gap), dash=`${len} ${cir-len}`;
-    const rot=off*360-90;
-    segs+=`<circle class="donut-seg" cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none"
-      stroke="${p.color}" stroke-width="${sw}" stroke-dasharray="${dash}"
-      transform="rotate(${rot} ${cx} ${cy})" data-key="${p.key}" stroke-linecap="butt"/>`;
-    off+=frac;
-  });
-  const svg=`<svg width="190" height="190" viewBox="0 0 190 190" role="img" aria-label="评测结果分布">
-    <circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${C.grid}" stroke-width="${sw}"/>
-    ${segs}
-    <text class="donut-center-val" x="${cx}" y="${cy-1}" text-anchor="middle">${fmtNum(total)}</text>
-    <text class="donut-center-lab" x="${cx}" y="${cy+16}" text-anchor="middle">评测样本总数</text>
-  </svg>`;
-  document.getElementById('donutChart').innerHTML=svg;
-  document.getElementById('donutLegend').innerHTML=parts.map(p=>{
-    const pct=(p.val/total*100).toFixed(1);
-    return `<span class="item" data-key="${p.key}"><span class="swatch" style="background:${p.color}"></span>${p.name}<span class="v">${fmtNum(p.val)}</span><span style="color:var(--ink-3)">(${pct}%)</span></span>`;
-  }).join('');
-
-  // donut hover
-  const tip=document.getElementById('tip');
-  document.querySelectorAll('.donut-seg').forEach(seg=>{
-    seg.addEventListener('mousemove',e=>{
-      const p=parts.find(x=>x.key===seg.dataset.key);
-      tip.innerHTML=`<div class="t-title">${p.name}</div>
-        <div class="t-row"><span class="l"><span class="sw" style="background:${p.color}"></span>样本</span><span class="n">${fmtNum(p.val)}</span></div>
-        <div class="t-row"><span class="l">占比</span><span class="n">${(p.val/total*100).toFixed(1)}%</span></div>`;
-      tip.style.opacity=1; positionTip(e);
-    });
-    seg.addEventListener('mouseleave',()=>tip.style.opacity=0);
-  });
 }
 
 /* ============================================================
@@ -1997,7 +1966,7 @@ function renderTable(){
     tbody.innerHTML='';
     empty.style.display='block';
     empty.querySelector('.et').textContent='没有匹配的评测流水';
-    empty.querySelector('.es').textContent='试试调整时间范围、回答质量或搜索条件';
+    empty.querySelector('.es').textContent='当前批次暂无可展示的评测流水';
     tableEl.style.display='none';
     document.getElementById('footSummary').textContent='—';
     document.getElementById('pager').innerHTML='';
@@ -2011,20 +1980,16 @@ function renderTable(){
 
   tbody.innerHTML=pageRows.map(row=>{
     const first=row.first;
-    const expandable=row.turns.length>1;
     return `
-    <tr class="task-row flow-row ${expandable?'expandable':''}" data-task="${row.traceId}">
+    <tr class="task-row flow-row" data-task="${row.traceId}">
       <td><span class="time-cell">${row.time}</span></td>
       <td><span class="trace-id">${row.traceId}</span></td>
       <td><span class="pin-cell">${row.pin}</span></td>
-      <td class="center">${roundPill(row.rounds)}</td>
       <td><div class="query-cell" title="${escapeHTML(first.query)}">${escapeHTML(first.query)}</div></td>
-      <td>${routeResultTag(first)}</td>
-      <td>${accuracyPill(first.routeAccuracy)}</td>
       <td>${attributionPill(row, first)}</td>
-      <td class="center"><button class="snapshot-open" type="button" data-snapshot="${row.traceId}" data-round="1">评测详情 →</button></td>
-    </tr>
-    <tr class="detail-row" data-detail="${row.traceId}"><td colspan="9"><div class="detail-wrap">${detailContent(row)}</div></td></tr>`;
+      <td>${evaluationConfidencePill(row.confidence)}</td>
+      <td class="center">${evaluationScorePill(row)}</td>
+    </tr>`;
   }).join('');
 
   // reopen previously-open snapshot
@@ -2059,16 +2024,7 @@ function detailContent(row){
   </div>`;
 }
 function wireTableRows(){
-  document.querySelectorAll('tr.flow-row.expandable').forEach(tr=>{
-    tr.addEventListener('click',()=>toggleTask(tr.dataset.task));
-  });
-  document.querySelectorAll('.snapshot-link,.snapshot-open').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      openSnapshotDetail(btn.dataset.snapshot, Number(btn.dataset.round || 1));
-    });
-  });
+  // V0.5 intentionally omits single-record drill-down and in-page manual review.
 }
 function toggleTask(id){
   const tr=document.querySelector(`tr.flow-row[data-task="${id}"]`);
@@ -2325,7 +2281,7 @@ function renderPager(pages){
 /* ============================================================
    Wire filters + initial render
    ============================================================ */
-function renderAll(){ renderKPI(); renderTrend(); renderDonut(); renderAttributionPanel(); renderTable(); }
+function renderAll(){ renderKPI(); renderAttributionPanel(); renderTable(); }
 
 function initFilters(){
   // range segmented
@@ -2346,12 +2302,8 @@ function initFilters(){
   document.getElementById('dateFrom').addEventListener('change',applyCustom);
   document.getElementById('dateTo').addEventListener('change',applyCustom);
 
-  // search (debounced)
-  let tmr; document.getElementById('searchInp').addEventListener('input',e=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ state.search=e.target.value.trim(); state.page=1; renderTable(); },180); });
-
-  // refresh + export (demo affordances)
-  document.getElementById('refreshBtn').addEventListener('click',()=>{ const ic=document.getElementById('refreshBtn'); ic.style.transition='transform .5s'; ic.style.transform='rotate(360deg)'; setTimeout(()=>{ic.style.transform='';ic.style.transition='';},520); updateStamp(); renderAll(); });
-  document.getElementById('exportBtn').addEventListener('click',exportCSV);
+  document.getElementById('exportAllBtn').addEventListener('click',()=>exportCSV('all'));
+  document.getElementById('exportLowConfidenceBtn').addEventListener('click',()=>exportCSV('low'));
   document.getElementById('kbFocusBtn').addEventListener('click',e=>{
     state.task='t3';
     state.page=1;
@@ -2374,27 +2326,160 @@ function updateStamp(){
   const now=new Date();
   document.getElementById('updatedAt').textContent=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
 }
-function exportCSV(){
-  const rows=snapshotRows();
-  let csv='时间,TraceID,用户Pin,轮数,会话Query（首轮）,知识命中,回答质量,知识库归因,归因来源\n';
+function exportCSV(scope='all'){
+  const rows=snapshotRows().filter(row=>scope==='low'?row.confidence!=='high':true);
+  let csv='时间,TraceID,用户Pin,Query,问题归因,是否置信,AI评分,人工评分(-1/0/1),人工归因,人工备注\n';
   rows.forEach(r=>{
     const first=r.first;
     const attr=effectiveKbAttribution(r, first);
     const attrName=attr?attributionType(attr.type).label:'不涉及';
-    const attrSource=attr?(attr.corrected?'人工修正':'AI自动归因'):'不涉及';
-    csv+=`${r.time},${r.traceId},${r.pin},${r.rounds},"${first.query}",${first.routeResult},${accuracyText(first.routeAccuracy)},${attrName},${attrSource}\n`;
+    const aiScore=evaluationScore(r);
+    const confidence=r.confidence==='high'?'置信':'非置信';
+    csv+=`${r.time},${r.traceId},${r.pin},"${String(first.query).replaceAll('"','""')}",${attrName},${confidence},${aiScore==null?'':aiScore},,,\n`;
   });
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=`知识库效果评测_${fmtDate(TODAY)}.csv`; a.click(); URL.revokeObjectURL(url);
+  const suffix=scope==='low'?'非置信人工复核':'全部评测结果';
+  a.href=url; a.download=`${activeBatchId || '知识库效果评测'}_${suffix}.csv`; a.click(); URL.revokeObjectURL(url);
 }
 function statusText(status){ return { success:'执行成功', failed:'执行失败', interrupted:'执行中断' }[status] || status; }
+
+/* ============================================================
+   V0.5 batch workflow + CSV feedback loop
+   ============================================================ */
+const BATCH_ROWS = [
+  { id:'RUN-0715-01', name:'07 月 15 日周期抽样', range:'近 7 天线上日志', samples:1000, progress:72, score:null, manual:0, status:'running' },
+  { id:'RUN-0714-03', name:'售后政策知识库回归', range:'07/08 - 07/14', samples:1180, progress:100, score:75.7, manual:120, status:'done' },
+  { id:'RUN-0714-02', name:'商家后台入口问答', range:'07/01 - 07/14', samples:500, progress:100, score:78.4, manual:80, status:'done' },
+  { id:'RUN-0713-01', name:'指标口径与边界问答', range:'06/14 - 07/13', samples:1096, progress:100, score:72.8, manual:200, status:'done' },
+  { id:'RUN-0712-02', name:'营销规则长尾问法', range:'近 30 天线上日志', samples:2000, progress:100, score:69.6, manual:0, status:'done' },
+];
+let activeBatchId='';
+let batchSize='1000';
+
+function batchStatus(row){
+  if(row.status==='running') return '<span class="status-chip running">运行中</span>';
+  return '<span class="status-chip done">已完成</span>';
+}
+function renderBatchTable(){
+  const tbody=document.getElementById('batchTbody');
+  tbody.innerHTML=BATCH_ROWS.map(row=>`<tr>
+    <td><button class="batch-link" type="button" data-open-batch="${row.id}">${row.id} · ${row.name}</button></td>
+    <td>${row.range}</td>
+    <td>${fmtNum(row.samples)}</td>
+    <td><span class="mini-progress"><span>${row.progress}%</span><i style="--progress:${row.progress}%"></i></span></td>
+    <td>${row.score==null?'—':row.score.toFixed(1)+'%'}</td>
+    <td>${fmtNum(row.manual)}</td>
+    <td>${batchStatus(row)}</td>
+    <td><button class="batch-link" type="button" data-open-batch="${row.id}">查看结果</button></td>
+  </tr>`).join('');
+  tbody.querySelectorAll('[data-open-batch]').forEach(btn=>btn.addEventListener('click',()=>openBatch(btn.dataset.openBatch)));
+}
+function openBatch(id){
+  const row=BATCH_ROWS.find(item=>item.id===id) || BATCH_ROWS[0];
+  activeBatchId=row.id;
+  document.getElementById('batchPage').hidden=true;
+  document.getElementById('detailPage').hidden=false;
+  document.getElementById('detailBatchTitle').textContent=`${row.id} · ${row.name}`;
+  document.getElementById('detailBatchMeta').textContent=`${row.range} · ${fmtNum(row.samples)} 条样本 · ${row.status==='running'?'评测进行中':'评测已完成'}`;
+  state.range='30'; state.page=1; state.openTask=null;
+  renderAll();
+  window.scrollTo(0,0);
+}
+function showBatchHome(){
+  document.getElementById('detailPage').hidden=true;
+  document.getElementById('batchPage').hidden=false;
+  activeBatchId='';
+  window.scrollTo(0,0);
+}
+function openBatchModal(){
+  const modal=document.getElementById('batchModal');
+  const taskName=document.getElementById('batchTaskName');
+  modal.hidden=false;
+  document.body.style.overflow='hidden';
+  taskName.value='';
+  taskName.classList.remove('invalid');
+  taskName.removeAttribute('aria-invalid');
+  document.getElementById('batchTaskNameError').textContent='';
+  document.getElementById('batchTaskNameCount').textContent='0 / 50';
+  document.getElementById('batchDateFrom').value=fmtDate(dayOffset(6));
+  document.getElementById('batchDateTo').value=fmtDate(TODAY);
+  requestAnimationFrame(()=>taskName.focus());
+}
+function closeBatchModal(){
+  document.getElementById('batchModal').hidden=true;
+  document.body.style.overflow='';
+}
+function showV05Toast(message){
+  const toast=document.getElementById('v05Toast');
+  toast.textContent=message; toast.classList.add('show');
+  clearTimeout(showV05Toast.timer); showV05Toast.timer=setTimeout(()=>toast.classList.remove('show'),2600);
+}
+function requestManualImport(){ document.getElementById('manualImportInput').click(); }
+function importManualCSV(file){
+  if(!file) return;
+  if(!file.name.toLowerCase().endsWith('.csv')){ showV05Toast('当前 V0.5 仅支持导入 CSV 文件'); return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const lines=String(reader.result||'').split(/\r?\n/).filter(line=>line.trim());
+    const count=Math.max(0,lines.length-1);
+    const target=BATCH_ROWS.find(row=>row.id===activeBatchId) || BATCH_ROWS.find(row=>row.status!=='running');
+    if(target){ target.manual=count; target.status='done'; }
+    renderBatchTable();
+    showV05Toast(`已导入 ${count} 条人工标注，回流校验完成`);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+function initV05(){
+  renderBatchTable();
+  document.getElementById('backToBatchBtn').addEventListener('click',showBatchHome);
+  document.getElementById('detailDownloadBtn').addEventListener('click',()=>{ exportCSV(); showV05Toast('人工校验模板已下载，可直接使用 Excel 编辑'); });
+  document.getElementById('detailImportBtn').addEventListener('click',requestManualImport);
+  document.getElementById('createBatchBtn').addEventListener('click',openBatchModal);
+  document.getElementById('createBatchBtn2').addEventListener('click',openBatchModal);
+  document.getElementById('closeBatchModal').addEventListener('click',closeBatchModal);
+  document.getElementById('cancelBatchModal').addEventListener('click',closeBatchModal);
+  document.getElementById('batchModal').addEventListener('click',e=>{ if(e.target.id==='batchModal') closeBatchModal(); });
+  document.getElementById('batchTaskName').addEventListener('input',e=>{
+    const input=e.currentTarget;
+    document.getElementById('batchTaskNameCount').textContent=`${input.value.length} / 50`;
+    if(input.value.trim()){
+      input.classList.remove('invalid');
+      input.removeAttribute('aria-invalid');
+      document.getElementById('batchTaskNameError').textContent='';
+    }
+  });
+  document.querySelectorAll('#sizeChoices .size-choice').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('#sizeChoices .size-choice').forEach(item=>item.classList.remove('on'));
+    btn.classList.add('on'); batchSize=btn.dataset.size;
+  }));
+  document.getElementById('submitBatch').addEventListener('click',()=>{
+    const taskNameInput=document.getElementById('batchTaskName');
+    const taskName=taskNameInput.value.trim();
+    if(!taskName){
+      taskNameInput.classList.add('invalid');
+      taskNameInput.setAttribute('aria-invalid','true');
+      document.getElementById('batchTaskNameError').textContent='请输入评测任务名称';
+      taskNameInput.focus();
+      return;
+    }
+    const now=new Date();
+    const suffix=`${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+    const from=document.getElementById('batchDateFrom').value, to=document.getElementById('batchDateTo').value;
+    const range=`${from.replaceAll('-','/')} - ${to.replaceAll('-','/')}`;
+    const samples=batchSize==='all'?3242:Number(batchSize);
+    BATCH_ROWS.unshift({ id:`RUN-0715-${suffix}`, name:taskName, range, samples, progress:0, score:null, manual:0, status:'running' });
+    closeBatchModal(); renderBatchTable(); showV05Toast('评测批次已创建并开始运行');
+  });
+  document.getElementById('manualImportInput').addEventListener('change',e=>{ importManualCSV(e.target.files[0]); e.target.value=''; });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('batchModal').hidden) closeBatchModal(); });
+}
 
 /* boot */
 initFilters();
 updateStamp();
 renderAll();
-window.addEventListener('resize',()=>{ renderTrend(); });
+initV05();
 </script>
 </body>
 </html>
